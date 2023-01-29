@@ -6,7 +6,8 @@ import Foundation
 import SystemConfiguration.CaptiveNetwork
 
 @objc(iOSWifiManager) class iOSWifiManager : CDVPlugin {
-
+    var wifiList: [(ssid: String, mac: String)] = []
+    
     func connect(_ command: CDVInvokedUrlCommand) {
 
         let args: NSDictionary = command.arguments[0] as! NSDictionary;
@@ -80,4 +81,30 @@ import SystemConfiguration.CaptiveNetwork
 
         return ssid
     }
+
+    // wifi 목록을 조회하고 ssid와 bssid로 구성된 오브젝트 배열을 반환합니다.
+    func scanWifi(_ command: CDVInvokedUrlCommand) {
+        let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: self.getWifiList())
+
+        self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
+    }
+
+    func getWifiList() -> [(ssid: String, mac: String)] {
+        let interfaces = CNCopySupportedInterfaces()
+        let interfacesArray = interfaces as! [String]
+
+        for interface in interfacesArray {
+            let networkInfo = CNCopyCurrentNetworkInfo(interface as CFString)
+            if let networkInfo = networkInfo as? [String: AnyObject] {
+                if let ssid = networkInfo["SSID"] as? String {
+                    if let bssid = networkInfo["BSSID"] as? String {
+                        let wifi = (ssid, bssid)
+                        self.wifiList.append(wifi)
+                    }
+                }
+            }
+        }
+        return self.wifiList
+    }
+    
 }

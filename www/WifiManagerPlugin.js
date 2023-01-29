@@ -10,6 +10,7 @@ let WifiManagerPlugin = function (require, exports, module) {
   const CHECK_CONNECTION_STATUS_CMD = 'checkConnection';
   const DISCONNECT_CMD = 'disconnect';
   const GET_CURRENT_SSID_CMD = 'getCurrentSSID';
+  const SCAN_WIFI_CMD = 'scanWifi';
 
   let getWifiConnectionStatusIntervalId;
 
@@ -57,6 +58,10 @@ let WifiManagerPlugin = function (require, exports, module) {
     exec(success, failure, PLUGIN_NAME, GET_CURRENT_SSID_CMD, []);
   };
 
+  WifiManagerPlugin.prototype.scanWifi = function (success, failure) {
+    exec(success, failure, PLUGIN_NAME, SCAN_WIFI_CMD, []);
+  };
+  
   let wifiScan = new WifiManagerPlugin();
   module.exports = wifiScan;
 };
